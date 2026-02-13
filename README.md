@@ -72,7 +72,7 @@ Downloaded the git repository using `wget`:
 wget -r http://192.168.77.131/.git/
 ```
 
-![Wget Download](assets/screenshots/wget.png)
+![Wget Download](assets/screenshots/wget_og.png)
 
 ### Analyzing Git History
 

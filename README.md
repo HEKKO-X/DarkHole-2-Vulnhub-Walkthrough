@@ -5,8 +5,6 @@
 
 **Difficulty:** Intermediate  
 **Target IP:** 192.168.77.131  
-**Attacker IP:** 192.168.77.130  
-
 ---
 
 ## Table of Contents

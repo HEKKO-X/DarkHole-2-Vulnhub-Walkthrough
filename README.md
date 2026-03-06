@@ -1,4 +1,4 @@
-# DarkHole V2 - CTF Walkthrough
+# Security Assessment Report: DarkHole V2
 
 ## Overview
 **DarkHole V2** is a vulnerable machine designed for penetration testing practice. This walkthrough demonstrates a complete compromise from initial reconnaissance to root access.

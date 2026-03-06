@@ -1,7 +1,7 @@
 # Security Assessment Report: DarkHole V2
 
 ## Overview
-**DarkHole V2** is a vulnerable machine designed for penetration testing practice. This walkthrough demonstrates a complete compromise from initial reconnaissance to root access.
+**Executive Summary** > Conducted a comprehensive security assessment of the DarkHole V2 environment. The assessment identified critical vulnerabilities including version control exposure (.git) and unauthenticated SQL injection, which facilitated initial access. Subsequent internal enumeration revealed an unsecured local service (RCE) and sudo misconfigurations, ultimately leading to a full system compromise (Root).
 
 **Difficulty:** Intermediate  
 **Target IP:** 192.168.77.131  
